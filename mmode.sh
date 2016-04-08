@@ -26,6 +26,19 @@
 #of the authors and should not be interpreted as representing official policies,
 #either expressed or implied, of the FreeBSD Project.
 
+#Environment Variables of mmode
+M_CC='gcc'
+M_CXX='g++'
+M_CPP="$M_CXX"
+#Override env var here if you want
+#DISTCC_HOSTS='localhost/2'
+
+# Blue "\[\033[44m\]"
+# High Itensity Blue "\[\033[0;104m\]"
+M_COLOR="\[\033[0;104m\]"
+M_NC="\[\033[0m\]"
+#Set to y if you want to make the state show before your PS1 setting
+M_PUT_BEFORE_PS1="n"
 
 _mmode()
 {
@@ -55,24 +68,6 @@ function _mmode_print_help(){
 }
 
 function mmode() {
-    #Environment Variables of mmode
-    M_CC='gcc'
-    M_CXX='g++'
-    M_CPP="$M_CXX"
-    #Read user setting if there is one
-    if [ ! -z "$DISTCC_HOSTS" ]; then
-        M_DISTCC_HOSTS=$DISTCC_HOSTS
-    else
-        M_DISTCC_HOSTS='localhost/2'
-    fi
-
-    # Blue "\[\033[44m\]"
-    # High Itensity Blue "\[\033[0;104m\]"
-    M_COLOR="\[\033[0;104m\]"
-    M_NC="\[\033[0m\]"
-    #Set to y if you want to make the state show before your PS1 setting
-    M_PUT_BEFORE_PS1="n"
-
     case "$1" in
     "-h") _mmode_print_help;;
     "--help") _mmode_print_help;;
@@ -105,7 +100,6 @@ function mmode() {
         else
             export PS1=$ORIG_PS1"${M_COLOR}ccache${M_NC} ${M_COLOR}distcc${M_NC} "
         fi
-        export DISTCC_HOSTS=$M_DISTCC_HOSTS
         export CCACHE_PREFIX="distcc "
         M_NUM_CORES=$(distcc -j)
         M_MAKE_J=$(echo "${M_NUM_CORES} * 7 / 5" | bc)
@@ -113,31 +107,34 @@ function mmode() {
             'make CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
             $M_CC $M_CXX $M_CPP $M_MAKE_J
         alias make=$M_MAKE_ALIAS
+        #Show current make alias
+        echo $M_MAKE_ALIAS
     elif [ "$M_DISTCC_ENABLEED" == 'y' ]; then
         if [ "$M_PUT_BEFORE_PS1" == 'y' ]; then
             export PS1="${M_COLOR}distcc${M_NC} "$ORIG_PS1
         else
             export PS1=$ORIG_PS1"${M_COLOR}distcc${M_NC} "
         fi
-        export DISTCC_HOSTS=$M_DISTCC_HOSTS
         M_NUM_CORES=$(distcc -j)
         M_MAKE_J=$(echo "${M_NUM_CORES} * 7 / 5" | bc)
         printf -v M_MAKE_ALIAS \
             'make CC="distcc %s" CXX="distcc %s" CPP="distcc %s" -j%d' \
             $M_CC $M_CXX $M_CPP $M_MAKE_J
-        echo $M_MAKE_ALIAS
         alias make=$M_MAKE_ALIAS
+        #Show current make alias
+        echo $M_MAKE_ALIAS
     elif [ "$M_CCACHE_ENABLEED" == 'y' ]; then
         if [ "$M_PUT_BEFORE_PS1" == 'y' ]; then
             export PS1="${M_COLOR}ccache${M_NC} "$ORIG_PS1
         else
             export PS1=$ORIG_PS1"${M_COLOR}ccache${M_NC} "
         fi
-        export DISTCC_HOSTS=$M_DISTCC_HOSTS
         printf -v M_MAKE_ALIAS \
             'make CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
             $M_CC $M_CXX $M_CPP $(nproc)
         alias make=$M_MAKE_ALIAS
+        #Show current make alias
+        echo $M_MAKE_ALIAS
     fi
 }
 #This is for updating shell state in case user source their shell config

@@ -1,6 +1,6 @@
 # Introduction
 __mmode__ is a tool to enable super fast compilation ability in an easy way.
-It supports ccache, distcc and ccache+distcc modes.
+It supports `ccache`, `distcc` and `ccache+distcc` modes.
 
 # Usage
 Execute `mmode --help` to see more information of the commands.
@@ -17,15 +17,18 @@ Normally, you can install them by your package manager.
 
 # Settings
 ## distcc
-You can start to use __mmode__ without settings.
-However, you have to specify `M_DISTCC_HOSTS` in the script in order to connect distcc server.
+You have to specify `DISTCC_HOSTS` in the script in order to connect distcc server.
 You can also use `DISTCC_HOSTS` environment variable to specify the distcc servers.
+
+## Compiler (Version)
+You can change the default compiler by changing `M_CC` and `M_CXX` in the script.
+Then, `source ~/.bashrc` to update the shell env vars.
 
 ## Color
 You can change the color code `M_COLOR` to a proper color.
 The color code is listed [here](http://mediadoneright.com/content/ultimate-git-ps1-bash-prompt).
 
-## Position of state
+## Position of state info in PS1
 Set `M_PUT_BEFORE_PS1` to __y__ if you want to change the position of state info to the beginning.
 
 # Installation
