@@ -10,8 +10,8 @@ __mmode__ automatically choose the optimal number for your compilation.
 If you want to override the number of parallel compilation, execute `make -jX` instead, where X is the number you specify.
 
 # Prerequests
-* (distcc)[https://github.com/distcc/distcc]
-* (ccache)[https://ccache.samba.org/]
+* [distcc](https://github.com/distcc/distcc)
+* [ccache](https://ccache.samba.org/)
 
 Normally, you can install them by your package manager.
 
@@ -23,7 +23,7 @@ You can also use `DISTCC_HOSTS` environment variable to specify the distcc serve
 
 ## Color
 You can change the color code `M_COLOR` to a proper color.
-The color code is listed (here)[http://mediadoneright.com/content/ultimate-git-ps1-bash-prompt].
+The color code is listed [here](http://mediadoneright.com/content/ultimate-git-ps1-bash-prompt).
 
 ## Position of state
 Set `M_PUT_BEFORE_PS1` to __y__ if you want to change the position of state info to the beginning.
