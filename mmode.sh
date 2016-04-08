@@ -60,7 +60,7 @@ function mmode() {
     M_CXX='g++'
     M_CPP="$M_CXX"
     #Read user setting if there is one
-    if [ ! -z $DISTCC_HOSTS ]; then
+    if [ ! -z "$DISTCC_HOSTS" ]; then
         M_DISTCC_HOSTS=$DISTCC_HOSTS
     else
         M_DISTCC_HOSTS='localhost/2'
