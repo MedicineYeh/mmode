@@ -32,11 +32,12 @@ The color code is listed [here](http://mediadoneright.com/content/ultimate-git-p
 Set `M_PUT_BEFORE_PS1` to __y__ if you want to change the position of state info to the beginning.
 
 # Installation
-Copy mmode.sh to `~/.mmode.sh` and add the following lines to your `~/.bashrc`, `~/.bash_profile`, etc.
+1. Copy mmode.sh to `~/.mmode.sh` by `cp ./mmode.sh ~/.mmode.sh`
+2. Add the following lines to your `~/.bashrc`, `~/.bash_profile`, etc.
 ``` bash
 source ~/.mmode.sh
 ```
-Then, execute `source ~/.bashrc`.
+Then, execute `source ~/.bashrc` (Your shell config file).
 
 # License
 FreeBSD License
