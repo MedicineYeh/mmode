@@ -35,13 +35,17 @@ M_CPP="$M_CXX"
 
 # Blue "\[\033[44m\]"
 # High Itensity Blue "\[\033[0;104m\]"
-M_COLOR="\[\033[0;104m\]"
-M_NC="\[\033[0m\]"
+M_BASH_COLOR='\[\033[0;104m\]'
+M_BASH_NC='\[\033[0m\]'
+#Color for zsh. Note: Not all background colors are supported by some teerminals.
+#Here are possible names of colors
+#   black blink blue conceal cyan green magenta red white yellow
+M_ZSH_COLOR='%K{blue}%F{white}'
+M_ZSH_NC='%{$reset_color%}'
 #Set to y if you want to make the state show before your PS1 setting
 M_PUT_BEFORE_PS1="n"
 
-_mmode()
-{
+function _mmode_bash() {
     local cur prev opts
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
@@ -53,21 +57,52 @@ _mmode()
         return 0
     fi
 }
-complete -F _mmode mmode
+
+function _mmode_zsh() {
+    local -a options
+    options=('--help:Display this help message' \
+             'reset:Reset shell to original mode' \
+             'distcc:Set shell to distcc state. alias CC,CXX,CPP in "make" with the optimal number of -j' \
+             'ccache:Set shell to ccache state. alias CC,CXX,CPP in "make" with the optimal number of -j' \
+             'both:Set shell to ccache + distcc state. alias CC,CXX,CPP in "make" with the optimal number of -j' \
+            )
+    _describe 'values' options
+}
+
+if [[ -n "$ZSH_VERSION" ]]; then
+    # assume Zsh
+    compdef _mmode_zsh mmode
+    autoload colors && colors
+    M_COLOR="$M_ZSH_COLOR"
+    M_NC="$M_ZSH_NC"
+elif [[ -n "$BASH_VERSION" ]]; then
+    # assume Bash
+    complete -F _mmode_bash mmode
+    M_COLOR="$M_BASH_COLOR"
+    M_NC="$M_BASH_NC"
+else
+    # asume something else
+    echo "No completion support in this shell";
+    M_COLOR="$M_BASH_COLOR"
+    M_NC="$M_BASH_NC"
+fi
 
 function _mmode_print_help(){
     echo "mmode is a tool developed by Medicine Yeh to enable parallel compilation ability in an easy way"
     echo "Version: 1.0"
     echo ""
     echo "Usage:"
-    echo "  reset          Reset bash to original state"
-    echo "  distcc         Set bash to distcc state. alias CC,CXX,CPP in 'make' with the optimal number of -j"
-    echo "  ccache         Set bash to ccache state. alias CC,CXX,CPP in 'make' with the optimal number of -j"
-    echo "  both           Set bash to ccache + distcc state. alias CC,CXX,CPP in 'make' with the optimal number of -j"
+    echo "  --help         Display This help message"
+    echo "  reset          Reset shell to original mode"
+    echo "  distcc         Set shell to distcc state. alias CC,CXX,CPP in 'make' with the optimal number of -j"
+    echo "  ccache         Set shell to ccache state. alias CC,CXX,CPP in 'make' with the optimal number of -j"
+    echo "  both           Set shell to ccache + distcc state. alias CC,CXX,CPP in 'make' with the optimal number of -j"
     echo ""
 }
 
 function mmode() {
+    local M_NUM_CORES M_MAKE_J M_MAKE_ALIAS
+
     case "$1" in
     "-h") _mmode_print_help;;
     "--help") _mmode_print_help;;
@@ -79,6 +114,7 @@ function mmode() {
         ORIG_PS1=''
         M_DISTCC_ENABLEED=''
         M_CCACHE_ENABLEED=''
+        export CCACHE_PREFIX=''
         return 0
         ;;
     "distcc") M_DISTCC_ENABLEED='y' ;;
@@ -90,12 +126,12 @@ function mmode() {
     esac
 
     #Backup original env vars when it's first time
-    [ "$ORIG_PS1" == '' ] && ORIG_PS1=$PS1
+    [[ "$ORIG_PS1" == '' ]] && ORIG_PS1=$PS1
 
     #Set up env vars
-    if [ "$M_DISTCC_ENABLEED" == 'y' ] && \
-       [ "$M_CCACHE_ENABLEED" == 'y' ]; then
-        if [ "$M_PUT_BEFORE_PS1" == 'y' ]; then
+    if [[ "$M_DISTCC_ENABLEED" == 'y' ]] && \
+       [[ "$M_CCACHE_ENABLEED" == 'y' ]]; then
+        if [[ "$M_PUT_BEFORE_PS1" == 'y' ]]; then
             export PS1="${M_COLOR}ccache${M_NC} ${M_COLOR}distcc${M_NC} "$ORIG_PS1
         else
             export PS1=$ORIG_PS1"${M_COLOR}ccache${M_NC} ${M_COLOR}distcc${M_NC} "
@@ -103,35 +139,35 @@ function mmode() {
         export CCACHE_PREFIX="distcc "
         M_NUM_CORES=$(distcc -j)
         M_MAKE_J=$(echo "${M_NUM_CORES} * 7 / 5" | bc)
-        printf -v M_MAKE_ALIAS \
+        M_MAKE_ALIAS=$(printf \
             'make CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
-            $M_CC $M_CXX $M_CPP $M_MAKE_J
+            $M_CC $M_CXX $M_CPP $M_MAKE_J)
         alias make=$M_MAKE_ALIAS
         #Show current make alias
         echo $M_MAKE_ALIAS
-    elif [ "$M_DISTCC_ENABLEED" == 'y' ]; then
-        if [ "$M_PUT_BEFORE_PS1" == 'y' ]; then
+    elif [[ "$M_DISTCC_ENABLEED" == 'y' ]]; then
+        if [[ "$M_PUT_BEFORE_PS1" == 'y' ]]; then
             export PS1="${M_COLOR}distcc${M_NC} "$ORIG_PS1
         else
             export PS1=$ORIG_PS1"${M_COLOR}distcc${M_NC} "
         fi
         M_NUM_CORES=$(distcc -j)
         M_MAKE_J=$(echo "${M_NUM_CORES} * 7 / 5" | bc)
-        printf -v M_MAKE_ALIAS \
+        M_MAKE_ALIAS=$(printf \
             'make CC="distcc %s" CXX="distcc %s" CPP="distcc %s" -j%d' \
-            $M_CC $M_CXX $M_CPP $M_MAKE_J
+            $M_CC $M_CXX $M_CPP $M_MAKE_J)
         alias make=$M_MAKE_ALIAS
         #Show current make alias
         echo $M_MAKE_ALIAS
-    elif [ "$M_CCACHE_ENABLEED" == 'y' ]; then
-        if [ "$M_PUT_BEFORE_PS1" == 'y' ]; then
+    elif [[ "$M_CCACHE_ENABLEED" == 'y' ]]; then
+        if [[ "$M_PUT_BEFORE_PS1" == 'y' ]]; then
             export PS1="${M_COLOR}ccache${M_NC} "$ORIG_PS1
         else
             export PS1=$ORIG_PS1"${M_COLOR}ccache${M_NC} "
         fi
-        printf -v M_MAKE_ALIAS \
+        M_MAKE_ALIAS=$(printf \
             'make CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
-            $M_CC $M_CXX $M_CPP $(nproc)
+            $M_CC $M_CXX $M_CPP $(nproc))
         alias make=$M_MAKE_ALIAS
         #Show current make alias
         echo $M_MAKE_ALIAS

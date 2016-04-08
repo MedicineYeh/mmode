@@ -26,7 +26,9 @@ Then, `source ~/.bashrc` to update the shell env vars.
 
 ## Color
 You can change the color code `M_COLOR` to a proper color.
-The color code is listed [here](http://mediadoneright.com/content/ultimate-git-ps1-bash-prompt).
+The color codes are listed here.
+* [bash](http://misc.flogisoft.com/bash/tip_colors_and_formatting)
+* zsh: Execute `spectrum_ls` and `spectrum_bls` for foreground and background colors, respectively.
 
 ## Position of state info in PS1
 Set `M_PUT_BEFORE_PS1` to __y__ if you want to change the position of state info to the beginning.
