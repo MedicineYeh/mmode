@@ -25,7 +25,7 @@ You can change the default compiler by changing `M_CC` and `M_CXX` in the script
 Then, `source ~/.bashrc` to update the shell env vars.
 
 ## Color
-You can change the color code `M_COLOR` to a proper color.
+You can change the color code `M_BASH_COLOR` and `M_ZSH_COLOR` to a proper color.
 The color codes are listed here.
 * [bash](http://misc.flogisoft.com/bash/tip_colors_and_formatting)
 * zsh: Execute `spectrum_ls` and `spectrum_bls` for foreground and background colors, respectively.
