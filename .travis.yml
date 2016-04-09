@@ -4,6 +4,6 @@ before_install:
   - sudo apt-get zsh
 
 script:
-	source ./mmode.sh
-	mmode --help
+  source ./mmode.sh
+  mmode --help
 
