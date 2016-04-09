@@ -11,6 +11,7 @@ before_install:
   - sudo apt-get install -y distcc
   - mkdir -p ~/.distcc/zeroconf/
   - echo "localhost/2" > ~/.distcc/zeroconf/hosts
+  - sudo cp ~/.distcc/zeroconf/hosts /etc/distcc/hosts
 
 script:
   - bash ./self_test.sh
