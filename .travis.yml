@@ -4,7 +4,7 @@ language: bash
 #  - sudo apt-get zsh
 
 script:
-  -bash source ./mmode.sh
-  -bash mmode --help
-  -zsh source ./mmode.sh
-  -zsh mmode --help
+  - bash source ./mmode.sh
+  - bash mmode --help
+  - zsh source ./mmode.sh
+  - zsh mmode --help
