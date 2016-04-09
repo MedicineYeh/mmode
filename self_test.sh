@@ -3,6 +3,7 @@
 source ./mmode.sh
 
 PS1='test $ '
+ORIG_PS1='test $ '
 export DISTCC_HOSTS='localhost/2'
 
 
