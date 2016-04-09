@@ -6,11 +6,6 @@ PS1='test $ '
 export DISTCC_HOSTS='localhost/2'
 
 
-
-
-
-
-
 M_AUTO_VERSION_DETECTION="n"
 echo "$PS1"
 
@@ -49,6 +44,7 @@ echo "$out"
 
 echo "        *** Test distcc + ccache ***"
 echo ""
+mmode reset
 mmode distcc
 mmode ccache
 out=''
@@ -64,6 +60,8 @@ mmode reset
 M_AUTO_VERSION_DETECTION="y"
 # Input yes for symbolic link confirmation
 echo 'yes' | mmode both
+#Do it again because the previous one won't effect the environment variables
+mmode both
 out=''
 [[ ! -n ${CCACHE_PREFIX} ]] && out=${out}" CCACHE_PREFIX FAIL"
 out=${out}$(alias | grep "make" | grep -v "ccache")
