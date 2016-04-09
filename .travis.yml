@@ -1,8 +1,9 @@
 language: bash
 
 before_install:
-  - sudo apt-get distcc ccache
+  - sudo apt-get install zsh distcc ccache
 
 script:
+  - bash
   - source ./mmode.sh
   - _mmode_self_test
