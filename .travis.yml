@@ -11,6 +11,5 @@ before_install:
   - sudo apt-get install -y distcc
 
 script:
-  - bash
   - source ./mmode.sh
-  - _mmode_self_test
+  - ./self_test.sh
