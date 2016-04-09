@@ -192,7 +192,7 @@ function mmode() {
         ORIG_PS1=''
         M_DISTCC_ENABLEED=''
         M_CCACHE_ENABLEED=''
-        export CCACHE_PREFIX=''
+        unset CCACHE_PREFIX
         return 0
         ;;
     "distcc") M_DISTCC_ENABLEED='y' ;;
