@@ -1,7 +1,14 @@
 language: bash
 
+addons:
+  apt:
+    packages:
+    - ccache
+    - zsh
+
 before_install:
-  - sudo apt-get install zsh distcc ccache
+  - sudo apt-get -qq update
+  - sudo apt-get install -y distcc
 
 script:
   - bash
