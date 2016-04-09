@@ -2,6 +2,15 @@
 
 source ./mmode.sh
 
+PS1='test $ '
+export DISTCC_HOSTS='localhost/2'
+
+
+
+
+
+
+
 M_AUTO_VERSION_DETECTION="n"
 echo "$PS1"
 
