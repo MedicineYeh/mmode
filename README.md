@@ -4,7 +4,7 @@ It supports `ccache`, `distcc` and `ccache+distcc` modes.
 
 [![Build Status](https://travis-ci.org/MedicineYeh/mmode.svg?branch=master)](https://travis-ci.org/MedicineYeh/mmode)
 
-__mmode__ supports `bash` and `zsh` shells!!
+__mmode__ supports both `bash` and `zsh` shells!!
 
 # Usage
 Execute `mmode --help` to see more information of the commands.
