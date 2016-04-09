@@ -1,5 +1,3 @@
-#!/bin/bash
-
 source ./mmode.sh
 
 PS1='test $ '

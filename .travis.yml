@@ -13,4 +13,5 @@ before_install:
   - echo "localhost/2" > ~/.distcc/zeroconf/hosts
 
 script:
-  - ./self_test.sh
+  - bash ./self_test.sh
+  - zsh ./self_test.sh
