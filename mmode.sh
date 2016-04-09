@@ -134,7 +134,7 @@ function _mmode_set_gcc_version() {
         if [[ ! -f "/bin/gcc-${gcc_ver}" ]]; then
             echo "Creating symbolic link for gcc-${gcc_ver}?"
             echo '    Set M_AUTO_VERSION_DETECTION="n" to disable this function'
-            if [[ "$(_mmode_ask_confirm)" == "1" ]]; then
+            if [[ "$(_mmode_ask_confirm)" == "0" ]]; then
                 sudo ln -s "/bin/$M_CC" "/bin/gcc-${gcc_ver}"
                 sudo ln -s "/bin/$M_CXX" "/bin/g++-${gcc_ver}"
                 sudo chmod +x "/bin/gcc-${gcc_ver}"
