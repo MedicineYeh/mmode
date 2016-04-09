@@ -129,12 +129,13 @@ function _mmode_set_gcc_version() {
 
     gcc_ver=$(${M_CC} --version | head -n1 | cut -d' ' -f3 | cut -d'.' -f1,2)
     if [[ -n "$gcc_ver" ]] && [[ "$M_AUTO_VERSION_DETECTION" == "y" ]]; then
-        if [[ ! -e "/bin/gcc-${gcc_ver}" ]]; then
+        if [[ ! -f "/usr/bin/gcc-${gcc_ver}" ]]; then
             echo "Creating symbolic link for gcc-${gcc_ver}?"
             echo '    Set M_AUTO_VERSION_DETECTION="n" to disable this function'
             if [[ "$(_mmode_ask_confirm)" == "yes" ]]; then
-                sudo ln -s "/bin/$M_CC" "/bin/gcc-${gcc_ver}"
-                sudo ln -s "/bin/$M_CXX" "/bin/g++-${gcc_ver}"
+                echo "Creating symbolic link for gcc..."
+                sudo ln -s "/usr/bin/$M_CC" "/usr/bin/gcc-${gcc_ver}"
+                sudo ln -s "/usr/bin/$M_CXX" "/usr/bin/g++-${gcc_ver}"
             fi
         fi
         M_CC_V="gcc-${gcc_ver}"
