@@ -1,4 +1,3 @@
-#!/bin/bash
 #Copyright (c) 2016, Medicine Yeh
 #All rights reserved.
 #
@@ -44,7 +43,13 @@ M_ZSH_COLOR='%K{blue}%F{white}'
 M_ZSH_NC='%{$reset_color%}'
 #Set to y if you want to make the state show before your PS1 setting
 M_PUT_BEFORE_PS1="n"
+#Set to y if you want to use the version detection function
+#If distcc servers have all versions of gcc, set this to y could improve compatibility
+M_AUTO_VERSION_DETECTION="n"
 
+# DO NOT EDIT THE VARIABLES AFTER THIS LINE UNLESS YOU KNOW THE RISK!!
+# DO NOT EDIT THE VARIABLES AFTER THIS LINE UNLESS YOU KNOW THE RISK!!
+# DO NOT EDIT THE VARIABLES AFTER THIS LINE UNLESS YOU KNOW THE RISK!!
 function _mmode_bash() {
     local cur prev opts
     COMPREPLY=()
@@ -60,7 +65,7 @@ function _mmode_bash() {
 
 function _mmode_zsh() {
     local -a options
-    options=('--help:Display this help message' \
+    options=('--help:Display help message and information of usage!!!' \
              'reset:Reset shell to original mode' \
              'distcc:Set shell to distcc state. alias CC,CXX,CPP in "make" with the optimal number of -j' \
              'ccache:Set shell to ccache state. alias CC,CXX,CPP in "make" with the optimal number of -j' \
@@ -87,6 +92,61 @@ else
     M_NC="$M_BASH_NC"
 fi
 
+
+function _mmode_ask_confirm()
+{
+    local user_decision=""
+
+    echo $1
+    read -p "contiune[yes/no]? " user_decision
+
+    while [ "yes" != "${user_decision}" -a "no" != "${user_decision}" ]
+    do
+        read -p "contiune[yes/no]?, please answer 'yes' or 'no': " user_decision
+    done
+
+    [ "yes" == "${user_decision}" ] && return 0
+    return 1
+}
+
+function _mmode_set_ps1() {
+    local mode_str
+    mode_str="${M_COLOR}${1}${M_NC} "
+    [[ -n "$2" ]] && mode_str=${mode_str}"${M_COLOR}${2}${M_NC} "
+
+    if [[ "$M_PUT_BEFORE_PS1" == 'y' ]]; then
+        export PS1=${mode_str}$ORIG_PS1
+    else
+        export PS1=${ORIG_PS1}${mode_str}
+    fi
+}
+
+function _mmode_set_gcc_version() {
+    local gcc_ver
+
+    #Initialize to the default value
+    M_CC_V="$M_CC"
+    M_CXX_V="$M_CXX"
+    M_CPP_V="$M_CPP"
+
+    gcc_ver=$(${M_CC} --version | head -n1 | cut -d' ' -f3 | cut -d'.' -f1,2)
+    if [[ -n "$gcc_ver" ]] && [[ "$M_AUTO_VERSION_DETECTION" == "y" ]]; then
+        if [[ ! -f "/bin/gcc-${gcc_ver}" ]]; then
+            echo "Creating symbolic link for gcc-${gcc_ver}?"
+            echo '    Set M_AUTO_VERSION_DETECTION="n" to disable this function'
+            if [[ "$(_mmode_ask_confirm)" == "1" ]]; then
+                sudo ln -s "/bin/$M_CC" "/bin/gcc-${gcc_ver}"
+                sudo ln -s "/bin/$M_CXX" "/bin/g++-${gcc_ver}"
+                sudo chmod +x "/bin/gcc-${gcc_ver}"
+                sudo chmod +x "/bin/g++-${gcc_ver}"
+            fi
+        fi
+        M_CC_V="gcc-${gcc_ver}"
+        M_CXX_V="g++-${gcc_ver}"
+        M_CPP_V="g++-${gcc_ver}"
+    fi
+}
+
 function _mmode_print_help(){
     echo "mmode is a tool developed by Medicine Yeh to enable parallel compilation ability in an easy way"
     echo "Version: 1.0"
@@ -98,16 +158,27 @@ function _mmode_print_help(){
     echo "  ccache         Set shell to ccache state. alias CC,CXX,CPP in 'make' with the optimal number of -j"
     echo "  both           Set shell to ccache + distcc state. alias CC,CXX,CPP in 'make' with the optimal number of -j"
     echo ""
+    echo "Helpful Notes/Features:"
+    echo "  If you have the same gcc toolchain version on the distcc servers, "
+    echo "  you don't need to change any setting in the script."
+    echo ""
+    echo "  RUN ANY VERSION OF GCC ON YOUR COMPUTER:"
+    echo "  If you have a distcc servers which have all versions of gcc (the future features of this tool),"
+    echo "  you can set M_AUTO_VERSION_DETECTION=\"y\" to enable the compatibility function."
+    echo "  Once you have set this flag to \"y\", the gcc version on your computer won't matter at all."
+    echo "  This tool will automatically help you to set correct settings to make your distcc works (on the client side)."
+    echo "  You can still use any gcc version you have on your computer by setting \"M_CC\" and \"M_CXX\" variables in the script."
+    echo ""
 }
 
 function mmode() {
-    local M_NUM_CORES M_MAKE_J M_MAKE_ALIAS
+    local num_cores num_j make_alias
 
     case "$1" in
     "-h") _mmode_print_help;;
     "--help") _mmode_print_help;;
     "reset")
-        alias make='make'
+        unalias make
         [ "$ORIG_PS1" != '' ] && export PS1=$ORIG_PS1
 
         #Reset memory
@@ -128,50 +199,41 @@ function mmode() {
     #Backup original env vars when it's first time
     [[ "$ORIG_PS1" == '' ]] && ORIG_PS1=$PS1
 
+    _mmode_set_gcc_version
+
     #Set up env vars
     if [[ "$M_DISTCC_ENABLEED" == 'y' ]] && \
        [[ "$M_CCACHE_ENABLEED" == 'y' ]]; then
-        if [[ "$M_PUT_BEFORE_PS1" == 'y' ]]; then
-            export PS1="${M_COLOR}ccache${M_NC} ${M_COLOR}distcc${M_NC} "$ORIG_PS1
-        else
-            export PS1=$ORIG_PS1"${M_COLOR}ccache${M_NC} ${M_COLOR}distcc${M_NC} "
-        fi
+        _mmode_set_ps1 "ccache" "distcc"
+        num_cores=$(distcc -j)
+        num_j=$(echo "${num_cores} * 7 / 5" | bc)
+        make_alias=$(printf \
+            'make CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
+            $M_CC_V $M_CXX_V $M_CPP_V $num_j)
+        #Only set this when use both
         export CCACHE_PREFIX="distcc "
-        M_NUM_CORES=$(distcc -j)
-        M_MAKE_J=$(echo "${M_NUM_CORES} * 7 / 5" | bc)
-        M_MAKE_ALIAS=$(printf \
-            'make CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
-            $M_CC $M_CXX $M_CPP $M_MAKE_J)
-        alias make=$M_MAKE_ALIAS
-        #Show current make alias
-        echo $M_MAKE_ALIAS
     elif [[ "$M_DISTCC_ENABLEED" == 'y' ]]; then
-        if [[ "$M_PUT_BEFORE_PS1" == 'y' ]]; then
-            export PS1="${M_COLOR}distcc${M_NC} "$ORIG_PS1
-        else
-            export PS1=$ORIG_PS1"${M_COLOR}distcc${M_NC} "
-        fi
-        M_NUM_CORES=$(distcc -j)
-        M_MAKE_J=$(echo "${M_NUM_CORES} * 7 / 5" | bc)
-        M_MAKE_ALIAS=$(printf \
+        _mmode_set_ps1 "distcc"
+        num_cores=$(distcc -j)
+        num_j=$(echo "${num_cores} * 7 / 5" | bc)
+        make_alias=$(printf \
             'make CC="distcc %s" CXX="distcc %s" CPP="distcc %s" -j%d' \
-            $M_CC $M_CXX $M_CPP $M_MAKE_J)
-        alias make=$M_MAKE_ALIAS
-        #Show current make alias
-        echo $M_MAKE_ALIAS
+            $M_CC_V $M_CXX_V $M_CPP_V $num_j)
     elif [[ "$M_CCACHE_ENABLEED" == 'y' ]]; then
-        if [[ "$M_PUT_BEFORE_PS1" == 'y' ]]; then
-            export PS1="${M_COLOR}ccache${M_NC} "$ORIG_PS1
-        else
-            export PS1=$ORIG_PS1"${M_COLOR}ccache${M_NC} "
-        fi
-        M_MAKE_ALIAS=$(printf \
+        _mmode_set_ps1 "ccache"
+        make_alias=$(printf \
             'make CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
-            $M_CC $M_CXX $M_CPP $(nproc))
-        alias make=$M_MAKE_ALIAS
-        #Show current make alias
-        echo $M_MAKE_ALIAS
+            $M_CC_V $M_CXX_V $M_CPP_V $(nproc))
+    else
+        #Exit when there is no mode set. The following lines are common actions
+        return 0;
     fi
+
+    alias make=$make_alias
+    #Show current settings of env vars
+    echo "Current settings:"
+    echo "  CCACHE_PREFIX=$CCACHE_PREFIX"
+    echo "  alias make='$make_alias'"
 }
 #This is for updating shell state in case user source their shell config
 mmode
