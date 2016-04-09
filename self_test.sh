@@ -60,8 +60,6 @@ mmode reset
 M_AUTO_VERSION_DETECTION="y"
 # Input yes for symbolic link confirmation
 echo 'yes' | mmode both
-#Do it again because the previous one won't effect the environment variables
-mmode both
 out=''
 [[ ! -n ${CCACHE_PREFIX} ]] && out=${out}" CCACHE_PREFIX FAIL"
 out=${out}$(alias | grep "make" | grep -v "ccache")

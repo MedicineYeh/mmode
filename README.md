@@ -3,7 +3,8 @@ __mmode__ is a tool to enable super fast compilation ability in an easy way.
 It supports `ccache`, `distcc` and `ccache+distcc` modes.
 
 [![Build Status](https://travis-ci.org/MedicineYeh/mmode.svg?branch=master)](https://travis-ci.org/MedicineYeh/mmode)
-__mmode__ support `bash` and `zsh` shells!!
+
+__mmode__ supports `bash` and `zsh` shells!!
 
 # Usage
 Execute `mmode --help` to see more information of the commands.
