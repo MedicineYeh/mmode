@@ -14,7 +14,7 @@ out=${out}$(echo $PS1 | grep "distcc")
 out=${out}${CCACHE_PREFIX}
 out=${out}$(alias | grep "make")
 echo "$out"
-[[ -n "$out" ]] && return 1
+[[ -n "$out" ]] && exit 1
 
 echo "       *** Test distcc ***"
 echo ""
@@ -25,7 +25,7 @@ out=${out}$(echo $PS1 | grep "ccache")
 out=${out}${CCACHE_PREFIX}
 out=${out}$(alias | grep "make" | grep -v "distcc")
 echo "$out"
-[[ -n "$out" ]] && return 2
+[[ -n "$out" ]] && exit 2
 
 echo "        *** Test ccache ***"
 echo ""
@@ -36,7 +36,7 @@ out=${out}$(echo $PS1 | grep "distcc")
 out=${out}${CCACHE_PREFIX}
 out=${out}$(alias | grep "make" | grep -v "ccache")
 echo "$out"
-[[ -n "$out" ]] && return 3
+[[ -n "$out" ]] && exit 3
 
 echo "        *** Test distcc + ccache ***"
 echo ""
@@ -47,7 +47,7 @@ out=''
 out=${out}$(alias | grep "make" | grep -v "ccache")
 out=${out}$(alias | grep "make" | grep "distcc")
 echo "$out"
-[[ -n "$out" ]] && return 4
+[[ -n "$out" ]] && exit 4
 
 echo "        *** Test both with M_AUTO_VERSION_DETECTION ***"
 echo ""
@@ -62,10 +62,10 @@ out=${out}$(alias | grep "make" | grep "distcc")
 out=${out}$(alias | grep "make" | grep -v "gcc-")
 out=${out}$(alias | grep "make" | grep -v "g++-")
 echo "$out"
-[[ -n "$out" ]] && return 5
+[[ -n "$out" ]] && exit 5
 
 M_AUTO_VERSION_DETECTION="n"
 #All pass
-return 0
+exit 0
 
 
