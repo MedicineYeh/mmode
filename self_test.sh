@@ -4,8 +4,6 @@ PS1='test $ '
 ORIG_PS1='test $ '
 export DISTCC_HOSTS='localhost/2'
 
-[[ -n "$ZSH_VERSION" ]] && exit 1
-
 M_AUTO_VERSION_DETECTION="n"
 echo "$PS1"
 
