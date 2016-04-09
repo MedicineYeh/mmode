@@ -1,10 +1,5 @@
 language: bash
 
-#before_install:
-#  - sudo apt-get zsh
-
 script:
-  - bash source ./mmode.sh
-  - bash mmode --help
-  - zsh source ./mmode.sh
-  - zsh mmode --help
+  - source ./mmode.sh
+  - _mmode_self_test
