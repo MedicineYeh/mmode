@@ -159,15 +159,24 @@ function _mmode_print_help(){
     echo "  both           Set shell to ccache + distcc state. alias CC,CXX,CPP in 'make' with the optimal number of -j"
     echo ""
     echo "Helpful Notes/Features:"
-    echo "  If you have the same gcc toolchain version on the distcc servers, "
-    echo "  you don't need to change any setting in the script."
+    echo "    If you have the same gcc toolchain version on the distcc servers, "
+    echo "    you don't need to change any setting in the script."
     echo ""
     echo "  RUN ANY VERSION OF GCC ON YOUR COMPUTER:"
-    echo "  If you have a distcc servers which have all versions of gcc (the future features of this tool),"
-    echo "  you can set M_AUTO_VERSION_DETECTION=\"y\" to enable the compatibility function."
-    echo "  Once you have set this flag to \"y\", the gcc version on your computer won't matter at all."
-    echo "  This tool will automatically help you to set correct settings to make your distcc works (on the client side)."
-    echo "  You can still use any gcc version you have on your computer by setting \"M_CC\" and \"M_CXX\" variables in the script."
+    echo "    If you have a distcc servers which have all versions of gcc (the future features of this tool),"
+    echo "    you can set M_AUTO_VERSION_DETECTION=\"y\" to enable the compatibility function."
+    echo "    Once you have set this flag to \"y\", the gcc version on your computer won't matter at all."
+    echo "    This tool will automatically help you to set correct settings to make your distcc works (on the client side)."
+    echo "    You can still use any gcc version you have on your computer by setting \"M_CC\" and \"M_CXX\" variables in the script."
+    echo ""
+    echo "  HOW TO SPECIFY -j FOR YOUR MAKE:"
+    echo "    You can easily add \"-jX\" to your make command. The argument will override the original one in the alias."
+    echo "    No matter what number of \"-j\" is in the alias, you always can force the number to be any number you want."
+    echo "    For example: "
+    echo "        make -j4"
+    echo ""
+    echo "  HOW TO SPECIFY COMPILER VERSION:"
+    echo "    Modify the variables, \"M_CC\" and \"M_CXX\" in this script."
     echo ""
 }
 
@@ -179,6 +188,7 @@ function mmode() {
     "--help") _mmode_print_help;;
     "reset")
         unalias make
+        unalias colormake
         [ "$ORIG_PS1" != '' ] && export PS1=$ORIG_PS1
 
         #Reset memory
@@ -208,7 +218,7 @@ function mmode() {
         num_cores=$(distcc -j)
         num_j=$(echo "${num_cores} * 7 / 5" | bc)
         make_alias=$(printf \
-            'make CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
+            'CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
             $M_CC_V $M_CXX_V $M_CPP_V $num_j)
         #Only set this when use both
         export CCACHE_PREFIX="distcc "
@@ -217,23 +227,25 @@ function mmode() {
         num_cores=$(distcc -j)
         num_j=$(echo "${num_cores} * 7 / 5" | bc)
         make_alias=$(printf \
-            'make CC="distcc %s" CXX="distcc %s" CPP="distcc %s" -j%d' \
+            'CC="distcc %s" CXX="distcc %s" CPP="distcc %s" -j%d' \
             $M_CC_V $M_CXX_V $M_CPP_V $num_j)
     elif [[ "$M_CCACHE_ENABLEED" == 'y' ]]; then
         _mmode_set_ps1 "ccache"
         make_alias=$(printf \
-            'make CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
+            'CC="ccache %s" CXX="ccache %s" CPP="ccache %s" -j%d' \
             $M_CC_V $M_CXX_V $M_CPP_V $(nproc))
     else
         #Exit when there is no mode set. The following lines are common actions
         return 0;
     fi
 
-    alias make=$make_alias
+    alias make='make '$make_alias
+    alias colormake='colormake '$make_alias
     #Show current settings of env vars
     echo "Current settings:"
     echo "  CCACHE_PREFIX=$CCACHE_PREFIX"
-    echo "  alias make='$make_alias'"
+    echo "  alias make='make $make_alias'"
+    echo "  alias colormake='colormake $make_alias'"
 }
 #This is for updating shell state in case user source their shell config
 mmode
