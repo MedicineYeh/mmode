@@ -253,6 +253,8 @@ mmode
 function _mmode_self_test() {
     #This is a function to test all functionality of mmode on travis CI
     M_AUTO_VERSION_DETECTION="n"
+    echo "$PS1"
+
     echo "        *** Test reset ***"
     echo ""
     mmode reset
@@ -262,7 +264,7 @@ function _mmode_self_test() {
     out=${out}${CCACHE_PREFIX}
     out=${out}$(alias | grep "make")
     echo "$out"
-    [[ -n "$out" ]] && return -1
+    [[ -n "$out" ]] && return 1
 
     echo "       *** Test distcc ***"
     echo ""
@@ -273,7 +275,7 @@ function _mmode_self_test() {
     out=${out}${CCACHE_PREFIX}
     out=${out}$(alias | grep "make" | grep -v "distcc")
     echo "$out"
-    [[ -n "$out" ]] && return -1
+    [[ -n "$out" ]] && return 2
 
     echo "        *** Test ccache ***"
     echo ""
@@ -284,7 +286,7 @@ function _mmode_self_test() {
     out=${out}${CCACHE_PREFIX}
     out=${out}$(alias | grep "make" | grep -v "ccache")
     echo "$out"
-    [[ -n "$out" ]] && return -1
+    [[ -n "$out" ]] && return 3
 
     echo "        *** Test distcc + ccache ***"
     echo ""
@@ -295,7 +297,7 @@ function _mmode_self_test() {
     out=${out}$(alias | grep "make" | grep -v "ccache")
     out=${out}$(alias | grep "make" | grep "distcc")
     echo "$out"
-    [[ -n "$out" ]] && return -1
+    [[ -n "$out" ]] && return 4
 
     echo "        *** Test both with M_AUTO_VERSION_DETECTION ***"
     echo ""
@@ -310,7 +312,7 @@ function _mmode_self_test() {
     out=${out}$(alias | grep "make" | grep -v "gcc-")
     out=${out}$(alias | grep "make" | grep -v "g++-")
     echo "$out"
-    [[ -n "$out" ]] && return -1
+    [[ -n "$out" ]] && return 5
 
     M_AUTO_VERSION_DETECTION="n"
     #All pass
