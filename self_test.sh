@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#This is a function to test all functionality of mmode on travis CI
+source ./mmode.sh
+
 M_AUTO_VERSION_DETECTION="n"
 echo "$PS1"
 
