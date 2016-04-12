@@ -3,7 +3,7 @@ __mmode__ is a tool to enable super fast compilation ability in an easy way.
 It supports `ccache`, `distcc` and `ccache+distcc` modes.
 
 Ccache is __compiler cache__ to accelerate the speed of compilation by caching the compiled data. Recompile linux kernel only requires less than 5s!!!
-Distcc is __distributed cc__. It's a stateless distributed compilation framework. With about 2 Xeon servers(32 threads), distcc reduces about 60% of time on compiling Linux kernel.
+Distcc is __distributed cc__. It's a stateless distributed compilation framework. With about 2 Xeon servers(24 threads), distcc reduces about 60% of time on compiling Linux kernel.
 
 [![Build Status](https://travis-ci.org/MedicineYeh/mmode.svg?branch=master)](https://travis-ci.org/MedicineYeh/mmode)
 
