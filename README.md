@@ -33,7 +33,7 @@ You can also use `DISTCC_HOSTS` environment variable to specify the distcc serve
 Here is an example:
 `export DISTCC_HOSTS='1.1.1.1/8,lzo sample.server.url/12,lzo localhost/2'`
 * __1.1.1.1/8,lzo__: 1.1.1.1 is the IP address of distcc server. 8 is the number of cores provided by that server. lzo is using __lzo__ compression algorithm on the file before sending it.
-* __sample.server.url/12__: "sample.server.url" is the URL of distcc server. 12 is the number of cores provided by that server. lzo is using __lzo__ compression algorithm on the file before sending it.
+* __sample.server.url/12,lzo__: "sample.server.url" is the URL of distcc server. 12 is the number of cores provided by that server. lzo is using __lzo__ compression algorithm on the file before sending it.
 * __localhost/2__: means locally provide 2 cores for compilation. lzo is not needed since it's localhost.
 
 ## Compiler (Version)
@@ -71,18 +71,18 @@ docker run --rm -t -i -p 3632:3632 medicineyeh/arch-distcc-all-gcc:latest distcc
 
 # Installation
 ## Your computer
-1. Copy mmode.sh to `~/.mmode.sh` by `cp ./mmode.sh ~/.mmode.sh`
-2. Add the following lines to your `~/.bashrc`, `~/.bash_profile`, etc.
+* Copy mmode.sh to `~/.mmode.sh` by `cp ./mmode.sh ~/.mmode.sh`
+* Add the following lines to your `~/.bashrc`, `~/.bash_profile`, etc.
 ``` bash
 source ~/.mmode.sh
 ```
-3. If you want to specify servers by env vars add export before the `source ~/.mmode.sh`
+* If you want to specify servers by env vars add export before the `source ~/.mmode.sh`
 ``` bash
 export DISTCC_HOSTS='localhost/2'
 source ~/.mmode.sh
 ```
-4. Enable/disable features in the script `~/.mmode.sh`
-5. Then, execute `source ~/.bashrc` (Your shell config file).
+* Enable/disable features in the script `~/.mmode.sh`
+* Then, execute `source ~/.bashrc` (Your shell config file).
 
 ## Distcc Server
 1. Install distcc by package manager or compile it by your own.
