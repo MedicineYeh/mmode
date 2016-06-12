@@ -61,10 +61,14 @@ When you enable this feature, the script will detect your gcc version and add su
 Distcc will then dispatch post-processing job to remote server and call the __specific__ version of gcc to compile.
 Thus, I build a docker image containing multiple gcc versions for setting up distcc server easily.
 
-On your server, simply run two commands to host a distcc server.
+There is a Dockerfile in this repo to download docker image and install newest gcc.
+The original gcc version in this docker image is __gcc-5.3__.
+If you don't want to install the newest gcc, simply remove the `RUN pacman -Sy` line in `Dockerfile`.
+
+On your server, in the mmode repository folder, simply run two commands to build and host a distcc server.
 ``` bash
-docker pull medicineyeh/arch-distcc-all-gcc
-docker run --rm -t -i -p 3632:3632 medicineyeh/arch-distcc-all-gcc:latest distccd --daemon --log-stderr --no-detach --allow 127.0.0.1/24
+sudo docker build -t distcc_server .
+sudo docker run --rm -t -i -p 3632:3632 distcc_server 127.0.0.1/24
 ```
 * `127.0.0.1/24` should be set to a IP range you want to allow a connection.
 * `3632:3632` is the port forwarding(HOST:CONTAINER). The default port is 3632. Normally you don't need to change the port number.
