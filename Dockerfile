@@ -4,7 +4,8 @@ MAINTAINER Medicine Yeh <medicinehy@gmail.com>
 
 RUN useradd -m distcc_user
 RUN echo 'Server = http://mirror.pritunl.com/archlinux/latest/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-RUN pacman --noconfirm -Sy gcc distcc
+RUN pacman -Syy
+RUN pacman --noconfirm -Syy gcc distcc
 
 USER distcc_user
 
