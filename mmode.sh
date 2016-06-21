@@ -28,7 +28,6 @@
 #Environment Variables of mmode
 M_CC='gcc'
 M_CXX='g++'
-M_AR='ar'
 #Override env var here if you want
 #DISTCC_HOSTS="localhost/2 --localslots_cpp=$(echo "$(nproc) * 4" | bc)"
 
@@ -125,7 +124,6 @@ function _mmode_set_gcc_version() {
     #Initialize to the default value
     M_CC_V="$M_CC"
     M_CXX_V="$M_CXX"
-    M_AR_V="$M_AR"
 
     gcc_ver=$(${M_CC} --version | head -n1 | cut -d' ' -f3 | cut -d'.' -f1,2)
     if [[ -n "$gcc_ver" ]] && [[ "$M_AUTO_VERSION_DETECTION" == "y" ]]; then
@@ -214,8 +212,8 @@ function mmode() {
         num_cores=$(distcc -j)
         num_j=$(echo "${num_cores} * 7 / 5" | bc)
         make_alias=$(printf \
-            'CC="ccache %s" CXX="ccache %s" AR="%s" -j%d' \
-            $M_CC_V $M_CXX_V $M_AR_V $num_j)
+            'CC="ccache %s" CXX="ccache %s" -j%d' \
+            $M_CC_V $M_CXX_V $num_j)
         export DISTCC_PAUSE_TIME_MSEC=300
         #Only set this when use both
         export CCACHE_PREFIX="distcc "
@@ -224,14 +222,14 @@ function mmode() {
         num_cores=$(distcc -j)
         num_j=$(echo "${num_cores} * 7 / 5" | bc)
         make_alias=$(printf \
-            'CC="distcc %s" CXX="distcc %s" AR="distcc %s" -j%d' \
-            $M_CC_V $M_CXX_V $M_AR_V $num_j)
+            'CC="distcc %s" CXX="distcc %s" -j%d' \
+            $M_CC_V $M_CXX_V $num_j)
         export DISTCC_PAUSE_TIME_MSEC=300
     elif [[ "$M_CCACHE_ENABLEED" == 'y' ]]; then
         _mmode_set_ps1 "ccache"
         make_alias=$(printf \
-            'CC="ccache %s" CXX="ccache %s" AR="%s" -j%d' \
-            $M_CC_V $M_CXX_V $M_AR_V $(nproc))
+            'CC="ccache %s" CXX="ccache %s" -j%d' \
+            $M_CC_V $M_CXX_V $(nproc))
     else
         #Exit when there is no mode set. The following lines are common actions
         return 0;
