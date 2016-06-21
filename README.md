@@ -1,13 +1,25 @@
 # Introduction
 __mmode__ is a tool to enable super fast compilation ability in an easy way.
+This framework automatically set configurations of __distcc__ to achieve better performance out of box then using __distcc__ directly.
 It supports `ccache`, `distcc` and `ccache+distcc` modes.
 
-Ccache is __compiler cache__ to accelerate the speed of compilation by caching the compiled data. Recompile linux kernel only requires less than 5s!!!
+Ccache is __compiler cache__ to accelerate the speed of compilation by caching the compiled data. Recompile linux kernel in less than 5s!!!
 Distcc is __distributed cc__. It's a stateless distributed compilation framework. With about 2 Xeon servers(24 threads), distcc reduces about 60% of time on compiling Linux kernel.
 
 [![Build Status](https://travis-ci.org/MedicineYeh/mmode.svg?branch=master)](https://travis-ci.org/MedicineYeh/mmode)
 
 __mmode__ supports both `bash` and `zsh` shells!!
+
+## Why Should I Use This?
+1. This framework automatically set proper parameter of __distcc__ to achieve better performance out of box then using __distcc__ directly.
+2. This framework provides both server side container with multiple gcc version for your needs. :D
+3. This framework automatically set the correct configurations for you.
+4. No need to type long command. All you need to type is `mmode distcc`!
+5. It's FreeBSD License!!
+
+## Attention!
+If you are using the DockerFile and `mmode` this repository provided and your Linux is not using latest gcc, ex: Ubuntu users, please enable the auto-version-detection in the `mmode.sh`.
+See more information: (Automatically gcc version detection)[#automatically-gcc-version-detection].
 
 # Usage
 * `mmode distcc`: Set to distcc compiling mode
@@ -18,7 +30,7 @@ Execute `mmode --help` to see more information of the commands.
 
 After changing the mode, you can simply execute `make` to compile your projects without __-j__.
 __mmode__ automatically choose the optimal number for your compilation.
-If you want to override the number of parallel compilation, execute `make -jX` instead, where X is the number you specify.
+If you want to override the number of parallel compilation, execute `make -jN` instead, where N is the number you specify.
 
 # Prerequests
 * [distcc](https://github.com/distcc/distcc)
