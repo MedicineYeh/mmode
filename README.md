@@ -4,11 +4,12 @@ This framework automatically set configurations of __distcc__ to achieve better 
 It supports `ccache`, `distcc` and `ccache+distcc` modes.
 
 Ccache is __compiler cache__ to accelerate the speed of compilation by caching the compiled data. Recompile linux kernel in less than 5s!!!
+
 Distcc is __distributed cc__. It's a stateless distributed compilation framework. With about 2 Xeon servers(24 threads), distcc reduces about 60% of time on compiling Linux kernel.
 
-[![Build Status](https://travis-ci.org/MedicineYeh/mmode.svg?branch=master)](https://travis-ci.org/MedicineYeh/mmode)
-
 __mmode__ supports both `bash` and `zsh` shells!!
+
+[![Build Status](https://travis-ci.org/MedicineYeh/mmode.svg?branch=master)](https://travis-ci.org/MedicineYeh/mmode)
 
 ## Why Should I Use This?
 1. This framework automatically set proper parameter of __distcc__ to achieve better performance out of box then using __distcc__ directly.
@@ -19,7 +20,7 @@ __mmode__ supports both `bash` and `zsh` shells!!
 
 ## Attention!
 If you are using the DockerFile and `mmode` this repository provided and your Linux is not using latest gcc, ex: Ubuntu users, please enable the auto-version-detection in the `mmode.sh`.
-See more information: (Automatically gcc version detection)[#automatically-gcc-version-detection].
+See more information: [Automatically gcc version detection](#automatically-gcc-version-detection).
 
 # Usage
 * `mmode distcc`: Set to distcc compiling mode
