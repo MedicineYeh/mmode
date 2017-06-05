@@ -91,19 +91,20 @@ else
     M_NC="$M_BASH_NC"
 fi
 
-
 function _mmode_ask_confirm()
 {
     local user_decision=""
 
-    read -p "contiune[yes/no]? " user_decision
-
-    while [ "yes" != "${user_decision}" -a "no" != "${user_decision}" ]
+    while [[ "yes" != "${user_decision}" && "no" != "${user_decision}" ]]
     do
-        read -p "contiune[yes/no]?, please answer 'yes' or 'no': " user_decision
+        if [[ -n "$ZSH_VERSION" ]]; then
+            read user_decision\?"contiune[yes/no]?"
+        else
+            read -p "contiune[yes/no]? " user_decision
+        fi
     done
 
-    [ "yes" == "${user_decision}" ] && echo "yes"
+    [[ "yes" == "${user_decision}" ]] && echo "yes"
 }
 
 function _mmode_set_ps1() {
