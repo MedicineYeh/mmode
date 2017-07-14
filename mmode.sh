@@ -44,7 +44,7 @@ M_ZSH_NC='%{$reset_color%}'
 M_PUT_BEFORE_PS1="n"
 #Set to y if you want to use the version detection function
 #If distcc servers have all versions of gcc, set this to y could improve compatibility
-M_AUTO_VERSION_DETECTION="n"
+M_AUTO_VERSION_DETECTION="y"
 
 # DO NOT EDIT THE VARIABLES AFTER THIS LINE UNLESS YOU KNOW THE RISK!!
 # DO NOT EDIT THE VARIABLES AFTER THIS LINE UNLESS YOU KNOW THE RISK!!
@@ -107,11 +107,38 @@ function _mmode_ask_confirm()
     [[ "yes" == "${user_decision}" ]] && echo "yes"
 }
 
+function prompt_mmode() {
+    local mmode_sym="%F{red}M%F{black} "
+    local distcc_bg=195
+    local ccache_bg=226
+
+    if [[ "$BULLETTRAIN_PROMPT_ORDER" != "" ]]; then
+        # Use bullet train prompt
+        [[ "$M_DISTCC_ENABLEED" == 'y' ]] && prompt_segment $distcc_bg black "${mmode_sym}distcc"
+        [[ "$M_CCACHE_ENABLEED" == 'y' ]] && prompt_segment $ccache_bg black "${mmode_sym}ccache"
+        return 0;
+    fi
+}
+
+function _mmode_set_prompt() {
+    if [[ "$BULLETTRAIN_PROMPT_ORDER" != "" ]]; then
+        BULLETTRAIN_PROMPT_ORDER[$BULLETTRAIN_PROMPT_ORDER[(i)mmode]]=()
+        if [[ "$M_PUT_BEFORE_PS1" == 'y' ]]; then
+            BULLETTRAIN_PROMPT_ORDER=(mmode $BULLETTRAIN_PROMPT_ORDER)
+        else
+            BULLETTRAIN_PROMPT_ORDER+=mmode
+        fi
+        return 0;
+    fi
+}
+
 function _mmode_set_ps1() {
     local mode_str
     mode_str="${M_COLOR}${1}${M_NC} "
     [[ -n "$2" ]] && mode_str=${mode_str}"${M_COLOR}${2}${M_NC} "
 
+    # Try set prompt for zsh. Exit when succeed
+    _mmode_set_prompt && return 0
     if [[ "$M_PUT_BEFORE_PS1" == 'y' ]]; then
         export PS1=${mode_str}$ORIG_PS1
     else
